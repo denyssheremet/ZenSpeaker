@@ -1,3 +1,6 @@
+var timer = 0;
+var pauses = 0;
+
 window.addEventListener('load', function() {
     var elem = document.getElementById("myBar");
 
@@ -9,7 +12,7 @@ window.addEventListener('load', function() {
             microphone = audioContext.createMediaStreamSource(stream);
             javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
 
-            analyser.smoothingTimeConstant = 0.2;
+            analyser.smoothingTimeConstant = 0;
             analyser.fftSize = 1024;
 
             microphone.connect(analyser);
@@ -25,9 +28,18 @@ window.addEventListener('load', function() {
                     values += (array[i]);
                 }
 
-                var average = values / length * 2;
+                var average = Math.round(values / length * 2);
+                if (average < 30) {
+                    timer += 10;
+                } else {
+                    timer = 0;
+                }
+                if (timer == 100) {
+                    pauses++;
+                    document.getElementById("pauseCount").innerHTML = pauses;
+                }
 
-                elem.style.width = Math.round(average) + "%";
+                elem.style.width = average + "%";
                 // colorPids(average);
             }
         })
